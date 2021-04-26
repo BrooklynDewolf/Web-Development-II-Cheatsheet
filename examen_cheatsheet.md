@@ -205,3 +205,248 @@ not ${2 * a + b} and not ${b}.`);
 // "Fifteen is 15 and
 // not 20."
 ```
+
+### 3.4 Datatype `undefined`
+
+Dit kan enkel de speciale waarde `undefined` bevatten. Deze staat voor een onbekende waarde (bv. een variabele waar nog geen waarde aan toegekend is)
+
+### 3.5 Datatype `null`
+
+Dit kan enkel de waarde `null` bevatten. Deze staat voor een lege object pointer.
+
+> **(!)** Evalueert false in een boolean expressie.
+
+### 3.5 Datatype `bigint`
+
+Men gebruikt dit om gehele getallen voor te stellen die buiten het bereik van `number` vallen.
+
+> **(!)** Gebruik de suffix `n` voor bigint literals
+>
+> ```JavaScript
+> const aVeryBigNumber = 900719925474099199n;
+> ```
+
+### 3.6 Datatype `object`
+
+Voorstelling van meer complexe datastructuren.
+Later meer hier over.
+
+### 3.7 Datatype `symbol`
+
+Dit wordt gebruikt om unieke identifiers voor te stellen (bv. unieke namen,..).
+
+## 4. Wrapper objects
+
+Wrapper objects zijn objecten dat een primitief datatype 'omsluit'. Voorbeelden:
+
+- `String`
+- `Number`
+- `BigInt`
+- `Boolean`
+- `Symbol`
+
+> **(!)** Maak gebruik van `valueOf()` om de primitieve waarde voorgesteld door het wrapper object te achterhalen.
+
+Het wrapper object geeft ons de mogelijkheid properties en methodes te gebruiken.
+
+> **(!)** JavaScript past impliciete conversie toe, het primitieve getal wordt automatisch omgezet naar een wrapper object als je een methode van het wrapper object oproept.
+
+### 4.1 [`Number`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
+
+Voorbeelden van methodes:
+
+- Afronden tot x cijfers na de komma:
+  - `toFixed(x)`
+- String representatie, x is de radix, default 10
+  - `toString(x)`
+
+Voorbeelden van properties:
+
+- Constante voor kleinste getal
+  - `Number.MIN_VALUE`
+- Constante voor grootste getal
+  - `Number.MAX_VALUE`
+
+### 4.2 [`Boolean`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)
+
+- Object casten naar `Boolean`
+  - `Boolean(x)`
+
+Om te weten welke waarde er uit gaat komen, kijk naar puntje 3.2 in dit document.
+
+### 4.3 [`String`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+
+- Object casten naar `String`
+  - `String(x)`
+
+### 4.4 [`BigInt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt)
+
+- Object casten naar `BigInt`
+  - `BigInt(x)` dit voegt eigenlijk gewoon 'n' toe aan een int
+
+## 5. [`Math`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math) & [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
+
+### 5.1 Het [`Math`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math) object
+
+Het `Math` object is een built-in object dat properties en methodes bevat voor wiskunde constanten en functies. Het bevat enkel static properties en methods.
+
+Enkele voorbeelden:
+
+```JavaScript
+console.log(Math.round(200.6)); //>>201
+console.log(Math.max(200, 1000, 4)); //>>1000 (bv. in Array)
+console.log(Math.min(200, 1000, 4)); //>>4
+console.log(Math.random()); //getal tussen 0 en 1
+```
+
+### 5.2 Het [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
+
+Houdt datums bij in milliseconden sinds 1/1/1970. Opgelet: kan enkel datums bijhouden 285.616 jaar ervoor en erna.
+
+Creatie datum:
+
+```JavaScript
+const date = new Date(); //bevat de huidige datum/tijd
+const date = new Date(1954,11,14,5,34,0,0); //jaar (4pos), maand (begint vanaf 0, dus waarde tussen 0 en 11), dag, uren, minuten, sec, msec)
+```
+
+Enkele methodes:
+
+```JavaScript
+const today = new Date();
+console.log(today);
+console.log(today.getFullYear());
+console.log(today.getMonth()); //(start vanaf 0!!!)
+console.log(today.getDate());
+console.log(today.getHours());
+console.log(today.getMinutes());
+console.log(today.getSeconds());
+console.log(today.getDay());
+```
+
+> **(!)** Zeer goed opletten: maanden liggen tussen 0 en 11. Dit betekent dat December de 11de maand is.
+
+## 6. [Controlestructuren](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements)
+
+- `if (..) {..}`
+
+```JavaScript
+if (scoops < 3) {
+console.log('Ice cream is running low!');
+}
+```
+
+- `if (..) {..} else {..}`
+
+```JavaScript
+if (scoops < 3) {
+console.log('Ice cream is running low!');
+} else if (scoops > 9) {
+console.log('Eat faster, the ice cream is going to melt!');
+}
+```
+
+- `switch (..) case ..`
+
+```JavaScript
+const d = new Date();
+const theDay = d.getDay();
+switch (theDay) {
+  case 5:
+  console.log('Finally Friday');
+  break;
+  case 6:
+  console.log('Super Saturday');
+  break;
+  case 0:
+  console.log('Sleepy Sunday');
+  break;
+  default:
+  console.log("I'm really looking forward to this weekend!");
+}
+```
+
+- `while (..) {..}`
+
+```JavaScript
+while (scoops > 0) {
+  console.log('More icecream!');
+  scoops--;
+}
+```
+
+- `do {..} while (..)`
+
+```JavaScript
+do {
+console.log('More icecream!');
+scoops++;
+} while (scoops < 10);
+```
+
+- `for (..) {..}`
+
+```JavaScript
+for (let berries = 5; berries > 0; berries--) {
+  console.log('Eating a berry');
+}
+```
+
+We kunnen herhalingen onderbreken met [`break`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/break) of [`continue`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/continue).
+
+## 7. Operatoren
+
+De meeste operatoren zijn gelijk aan bv. Java. Er is wel een belangrijke uitzondering. Er zijn 2 operatoren voor gelijkheid (`==` en `===`).
+
+- `==`
+  - er gebeurt impliciete type conversie, m.a.w. het type wordt niet gecontroleerd (m.a.w. 1 = '1')
+- `===`
+  - geen impliciete type conversie (m.a.w. 1 != '1')
+  - dit is best practice
+
+## 8. Functies
+
+In JavaScript zijn er ook functies. Hiermee verkrijgen we efficiëntere code en elimineren we dubbele code.
+
+Definitie:
+
+```JavaScript
+function functionname(par1,par2,...,parX) {
+statements
+};
+```
+
+Uitvoeren:
+
+```JavaScript
+functionname(arg1, arg2,….argx);
+```
+
+> **(!)** Merk op: er is hier geen datatype voor parameters en ook geen returntype!
+
+- Gebruik van bestaande functies:
+  - `alert("sometext")` alert box
+  - `confirm("sometext")` confirm box
+  - `prompt("sometext", "defaultvalue")` prompt box
+
+## 8. Arrays
+
+Een array is een geordende verzameling van elementen. De elementen **mogen van een verschillend** type zijn.
+
+Arrays in JavaScript zijn **dynamisch**. Je moet dus geen startgrootte opgeven bij de declaratie.
+
+Declaratie van een array:
+
+```JavaScript
+let pizzas = [];
+//OF
+let pizzas = new Array();
+```
+
+Waarden plaatsen in een Array:
+
+```JavaScript
+pizzas[0] = 'Margherita';
+pizzas[1] = 'Mushroom';
+pizzas[2] = 'Spinach & Rocket';
+```
