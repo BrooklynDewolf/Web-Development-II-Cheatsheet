@@ -390,7 +390,14 @@ scoops++;
 for (let berries = 5; berries > 0; berries--) {
   console.log('Eating a berry');
 }
+
+//Enhanced for (kan voor objecten, voor arrays best bovenstaande loop gebruiken en kijken of iterator kleiner is dan arraysize (of forEach() gebruiken).)
+for(let key in myAvatar) {
+  console.log(`${key} : ${myAvatar[key]}`)
+}
 ```
+
+- ``
 
 We kunnen herhalingen onderbreken met [`break`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/break) of [`continue`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/continue).
 
@@ -450,3 +457,180 @@ pizzas[0] = 'Margherita';
 pizzas[1] = 'Mushroom';
 pizzas[2] = 'Spinach & Rocket';
 ```
+
+Je kan Arrays direct opvullen met waarden als volgt:
+
+```JavaScript
+let pizzas = ['Testwaarde1', 'Testwaarde2', 'Testwaarde3'];
+```
+
+Deze moeten niet allemaal hetzelfde zijn.
+
+```JavaScript
+let mixedArray = ['Testwaarde1', true, 1];
+```
+
+### 8.1 Array bewerken
+
+Er zijn verschillende manieren om een Array te bewerken.
+
+- `pop()` verwijdert het laatste element uit array
+- `push('test')` voegt één of meerdere waarden toe aan het einde van de array
+- `shift()` verwijdert de eerste waarde in array EN returnt deze
+- `unshift()` voegt één of meerdere waarden toe aan het begin van het array
+
+### 8.2 Array methodes
+
+- `concat()` voegt 2 arrays samen
+- `reverse()` keert de volgorde van de array om
+- `slice(start_index, upto_index)` returnt een nieuwe array als een stuk van de oorspronkelijke array (past oude array NIET aan)
+- `splice(start_index, numberofItemsToRemove, nieuweWaarde1, ...)` voegt/verwijdert items toe/uit aan een array en returnt verwijderde items (past oude array aan)
+- `sort()` sorteer de elementen in de array (past oude array aan)
+- `indexOf(element)` returnt de index van het eerst voorkomende element dat gelijk is aan het doorgegeven element
+- `lastIndexOf(element)` zelfde als indexOf(), maar begint achteraan
+- `join()` converteert alle elementen van een array tot 1 lange string
+
+[Hier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#array_object) vind je meer informatie & methodes over Arrays.
+
+### 8.3 Array destructuring
+
+Je kan makkelijk meerdere waarden uit Arrays halen d.m.v. array destructuring.
+
+Voorbeeld:
+
+```JavaScript
+//Variabele declaraties
+//ophalen van eerste en tweede item uit een array
+pizzas = ['Margherita', 'Mushroom', 'Spinach & Rocket', 'Chicken & Bacon’];
+const [eerstePizza, tweedePizza] = pizzas;
+console.log(eerstePizza); // Margherita
+console.log(tweedePizza); // Mushroom
+//ophalen van derde item uit een array
+const [, , derdePizza] = pizzas;
+console.log(derdePizza); //Spinach & Rocket
+```
+
+## 9. Objecten en functies
+
+Een object is een verzameling van properties, die het object beschrijven.
+
+Een property heeft een naam en een waarde (key: value).
+
+### 9.1 Objecten
+
+Voorbeeld van een object:
+
+```JavaScript
+{
+  key : value,
+  key : value
+}
+
+// Een leeg object
+const emptyObject = {};
+
+//Object met waarden
+const myAvatar = {
+name: 'Bob',
+points: 20,
+gender: 'male',
+hair: { color: 'black', cut: 'punk' }
+};
+```
+
+#### 9.1.1 Properties uitlezen
+
+Een waarde van een property uitlezen:
+
+```JavaScript
+//Arraynotatie
+const name = myAvatar['name'];
+
+//Puntnotatie
+const points = myAvatar.points;
+
+const haircolor = myAvatar.hair.color;
+```
+
+#### 9.1.2 Properties toevoegen
+
+```JavaScript
+//Arraynotatie
+myAvatar['age'] = 18;
+
+//Puntnotatie
+myAvatar.age = 20;
+```
+
+Je kan ook onbestaande properties toevoegen. Dit doe je op dezelfde manier.
+
+#### 9.1.3 Properties verwijderen
+
+Dit doen we makkelijk met het `delete` keyword.
+
+```JavaScript
+//Arraynotatie
+delete myAvatar['gender'];
+
+//Puntnotatie
+delete myAvatar.gender;
+```
+
+#### 9.1.4 Object destructuring
+
+Dit is een krachtige manier om de waarden van properties vast te plakken.
+
+```JavaScript
+const { name, points, gender : sex} = myAvatar;
+
+//Variabelen namen zijn nu name, points en sex.
+```
+
+### 9.2 Functions
+
+### 9.3 Closures
+
+Closures zijn eigenlijk simpelweg functies die een innerfunctie retourneren. Die innerfunctie kan dan zo uitgevoerd worden.
+
+Voorbeeld:
+
+```JavaScript
+function stringRepeater(nrOfTimes) {
+  const repeater = function (msg) {
+    let message = '';
+    for (let i = 0; i < nrOfTimes; i++) message += msg;
+    return message;
+  };
+  return repeater;
+}
+
+// Gebruik dit om je code te testen:
+const stringDoubler = stringRepeater(2);
+const stringTripler = stringRepeater(3);
+console.log(stringDoubler('abc ')); // abc abc
+console.log(stringTripler('def ')); // def def def
+```
+
+Het resultaat van stringRepeater() is dan de inner functie repeater met de toegewezen waarde nrOfTimes in de for loop.
+
+### 9.4 Events
+
+Als een object moet reageren op een bepaalde event, voorzie je een eventhandler of callback functie.
+Wanneer het event getriggered wordt, zal de bijhorende event handler uitgevoerd worden.
+
+Enkele voorbeelden:
+
+- `onclick`, `onload`, `onmouseover`, `ondblclick`
+
+```JavaScript
+const init = function () {
+  const h1 = document.getElementById('h1');
+  h1.onmouseover = function () {
+    this.innerHTML = this.innerHTML.slice(1, this.innerHTML.length);
+  };
+};
+
+window.onload = init;
+```
+
+Meer info vind je [hier](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
