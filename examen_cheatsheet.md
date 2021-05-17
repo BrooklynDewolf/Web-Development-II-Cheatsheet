@@ -501,7 +501,7 @@ Voorbeeld:
 ```JavaScript
 //Variabele declaraties
 //ophalen van eerste en tweede item uit een array
-pizzas = ['Margherita', 'Mushroom', 'Spinach & Rocket', 'Chicken & Bacon’];
+pizzas = ['Margherita', 'Mushroom', 'Spinach & Rocket', 'Chicken & Bacon'];
 const [eerstePizza, tweedePizza] = pizzas;
 console.log(eerstePizza); // Margherita
 console.log(tweedePizza); // Mushroom
@@ -509,6 +509,20 @@ console.log(tweedePizza); // Mushroom
 const [, , derdePizza] = pizzas;
 console.log(derdePizza); //Spinach & Rocket
 ```
+
+#### 8.3.1 Arrays copy (destructuring)
+
+**Opgelet**: Als men een Array wilt kopiëren, dan kan dit niet zomaar met `a = b`. Dit is een hardlink. Alle aanpassingen die in b gebeuren, zullen ook in a gebeuren.
+
+Om dit te vermijden kunnen we gebruik maken van array destructuring.
+
+Voorbeeld:
+
+```JavaScript
+[...b] = a;
+```
+
+Dit zal een 'kopie' maken van array b en dit in a
 
 ## 9. Objecten en functies
 
@@ -586,7 +600,144 @@ const { name, points, gender : sex} = myAvatar;
 //Variabelen namen zijn nu name, points en sex.
 ```
 
-### 9.2 Functions
+### 9.1.5 Objecten overlopen
+
+We kunnen objecten overlopen met een for loop. Voorbeeld:
+
+```JavaScript
+let result = '';
+for (let key in myBicycle) {
+  result += `${key} - ${myBicycle[key]}\n`;
+}
+alert(result);
+```
+
+We overlopen het object `myBicycle` en stoppen iedere iteratie de volgende key in de variabele `key`.
+
+In het bovenstaande voorbeeld bouwen we een string op met de key en de waarde van de key.
+
+### 9.1.6 Functies in objecten
+
+Je kan perfect functies in objecten steken. Hieronder vind je een voorbeeld.
+
+```JavaScript
+const myBicycle = {
+  speed: 30,
+  gear: 1,
+  frameMaterial: 'carbon fibre',
+};
+
+myBicycle.accelerate = function (percentage) {
+  myBicycle.speed += (myBicycle.speed / 100) * percentage;
+};
+
+//Aanroepen van functie:
+myBicycle.accelerate(25);
+```
+
+### 9.2 Functies
+
+Functies zijn zoals in iedere andere taal blokken code die je kan aanroepen met parameters en eventueel waarden van kan terugkrijgen.
+
+De functie declaratie:
+
+- `function` keyword
+- naam van de functie
+- lijst van parameters
+  - tussen ronde haakjes, gescheiden door komma's
+- Javascript statements
+  - de function body, tussen accolades
+
+```JavaScript
+function sayHi(name) {
+return `Hi, my name is ${name}`;
+}
+```
+
+**(!)** Je kan default waarden voor parameters voorzien. Dit door deze in de parameterlijst een waarde toe te kennen.
+
+```JavaScript
+function dyeHair(avatar, color = 'green') {
+avatar.hair.color = color;
+}
+```
+
+### 9.2.1 Return statements
+
+Een return statement **stopt** verdere uitvoering van een function en retourneert een waarde naar de aanroeper van de functie.
+
+> `return` kan overal geplaatst worden in de function body
+>
+> `return` kan meerdere malen in de function body voorkomen
+>
+> Indien het einde van de function body bereikt wordt zonder return statement, dan retourneert de functie `undefined`
+
+Functie declaraties worden **gehoist**. Dit wil zeggen dat de declaratie als het ware naar boven wordt geplaatst.
+
+### 9.2.2 Rest parameter
+
+Via de rest parameter syntax kan je een onbeperkt aantal parameters voorstellen als een array. Je doet dit door de laatste parameter lijst te laten voorafgaan door `...`
+
+```JavaScript
+function f(a, b, ...otherArgs) {
+  for (let value of otherArgs) {
+    console.log(value);
+  }
+}
+f(1, 2, 3, 'Four', 5);
+```
+
+Je kan hierbij ook gebruik maken van array destructuring.
+
+```JavaScript
+function f(a, b, ...[c, d, e, f]) {
+  console.log(a);
+  console.log(b);
+  console.log(c);
+  console.log(d);
+  console.log(e);
+  console.log(f);
+}
+f(1, 2, 3, 'Four', 5);
+```
+
+### 9.2.3 Arrow functions
+
+Arrow functions zijn een **compactere syntax** om functie expressies te schrijven. Deze zijn altijd anoniem.
+
+Algemene syntax:
+
+```JavaScript
+(par1, par2, …, parn) => {statements}
+```
+
+- Als er geen parameters zijn, gebruik `()`.
+- Als er maar 1 parameter is, mag je `()` weglaten
+- Als de code enkel de return van een expressie is, mag je `{}` en `return` weglaten.
+
+```JavaScript
+const function1 = (a, b, c) => {
+  a = a + 1;
+  return a + b + c;
+};
+
+const function2 = (a, b, c) => a + 1 + b + c;
+
+const function3 = () => Math.random() * 20;
+```
+
+### 9.2.4 Functies toekennen aan variabele
+
+Men kan makkelijk functies toekennen aan een variabele. Deze functies kunnen ook anoniem zijn.
+
+```JavaScript
+const dyeHair = function (avatar, color = 'green') {
+avatar.hair.color = color;
+}
+dyeHair(myAvatar, 'yellow');
+```
+
+**(!)** Opgelet: Als je de variabele zonder haken aanroept, dan roep je de functie niet aan, maar refereer je naar de waarde van de variabele.
 
 ### 9.3 Closures
 
@@ -618,6 +769,17 @@ Het resultaat van stringRepeater() is dan de inner functie repeater met de toege
 Als een object moet reageren op een bepaalde event, voorzie je een eventhandler of callback functie.
 Wanneer het event getriggered wordt, zal de bijhorende event handler uitgevoerd worden.
 
+- Gebruik de methode `getElementById('')` om een object op te halen die overeenkomt met de html tag met dat id
+
+```JavaScript
+const sayHiButton = document.getElementById('sayHi');
+```
+
+Een event heeft
+
+- **een naam** - bv. click, change, load, mouseover, keyup, focus,...
+- **een target** - het element waarop het event van toepassing is
+
 Enkele voorbeelden:
 
 - `onclick`, `onload`, `onmouseover`, `ondblclick`
@@ -634,3 +796,165 @@ window.onload = init;
 ```
 
 Meer info vind je [hier](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
+
+### 9.5 Exceptions
+
+Je kan exceptions gooien in geval van een ongebruikelijke fout
+
+- `throw` gooit een exception object
+
+```JavaScript
+try {
+  throw {
+  name: 'SomethingWentWrongError',
+  message: 'Something went wrong. You should fix it'
+  };
+} catch (e) {
+  // handle the exception here
+  console.log(`Error ${e.name}: ${e.message}`);
+} finally {
+  // this is executed even if an exception occurs
+}
+```
+
+## 10. OOP in JavaScript
+
+JavaScript is een object-gebaseerde taal gebaseerd op **prototypes**, in plaats van op klassen.
+
+### 10.1 Klasse declaratie
+
+De klasse declaratie maakt een nieuwe klasse aan gebruik makend van de prototype-gebaseerde overerving.
+
+Standaard klasse layout:
+
+```JavaScript
+class ClassName {
+  constructor (...) {...}
+
+  method1 (...) {...}
+
+  get someProperty() {...}
+  set someProperty(value) {...}
+
+  static staticMethod(...) {...}
+}
+```
+
+Voorbeeld:
+
+```JavaScript
+class BlogEntry {
+  constructor(body, date) {
+  this.body = body;
+  this.date = date;
+  }
+}
+```
+
+Om een nieuwe instantie te make van bovenstaande klasse, gebruikt men het keyword `new`.
+
+```JavaScript
+const aBlogEntry = new BlogEntry('This is the body', new Date(2008, 7, 16));
+```
+
+### 10.1.1 Constructor
+
+Men stelt de constructor in met het keyword `constructor`. Hier kan men eventueel parameters aan meegeven.
+
+We gebruiken `this` om properties te definiëren en eventueel te initialiseren.
+
+```JavaScript
+class Test {
+  constructor(prop1, prop2) {
+    this.prop1 = prop1;
+    this.prop2 = prop2;
+    this.prop3 = '';
+  }
+}
+```
+
+Indien in een klasse niet expliciet een constructor wordt gedefinieerd, dan heeft de klasse impliciet een parameterloze constructor.
+
+> **(!)** Er is geen constructor overloading mogelijk. Je mag dus hoogstens 1 constructor definiëren.
+
+Ook belangrijk om te weten: properties zijn publiek toegankelijk.
+
+```JavaScript
+Test.prop1 = 'I love bananas';
+console.log(Test.prop1);
+```
+
+Dit is eigenlijk _not done_. We willen gebruik maken van private properties met getters & setters.
+
+### 10.1.2 Getters & setters (& private properties)
+
+De naam van een property die niet publiek zou mogen gebruikt worden laten we voorafgaan door een **underscore** (the way it should be done!).
+
+```JavaScript
+class BlogEntry {
+  constructor(body, date) {
+    this._body = body;
+    this._date = date;
+  }
+}
+```
+
+We voorzien in de klasse nu een publieke interface (publieke methodes, getters & setters die gebruik maken van de private properties).
+
+- **getter**
+
+We gebruiken het keyword `get` gevolgd door de naam van de property.
+
+```JavaScript
+class BlogEntry {
+  constructor(body, date) {
+    this._body = body;
+    this._date = date;
+  }
+
+  get body() { return this._body; }
+  get date() { return this._date; }
+}
+
+//Oproepen van getters:
+const aBlogEntry = new BlogEntry('...');
+console.log(`body: ${aBlogEntry.body}`);
+console.log(`date: ${aBlogEntry.date}`);
+```
+
+Merk op: de get syntax associeert een functie met een property maar je roept die functie niet expliciet op. De get functie wordt uitgevoerd als de waarde van de property gelezen moet worden.
+
+- **setters**
+
+We gebruiken het keyword `set` gevolgd door de naam van de property. Je kan exact 1 parameter gebruiken (de waarde die we wensen toe te kennen aan de property).
+
+```JavaScript
+class BlogEntry {
+  constructor(body, date) {
+    this._body = body;
+    this._date = date;
+  }
+
+  get body() { return this._body; }
+  set body(value) {
+    this._body = value;
+  }
+  get date() { return this._date; }
+}
+
+//Oproepen van getters:
+const aBlogEntry = new BlogEntry('...');
+console.log(`body: ${aBlogEntry.body}`);
+console.log(`date: ${aBlogEntry.date}`);
+```
+
+### 10.1.3 Methods
+
+Methods zijn hetzelfde als functies, maar dan in een klasse.
+
+### Tips & tricks
+
+- Tekstveld uitlezen: `document.getElementById('test').value`
+- Element src bewerken: `document.getElementById('test').src = 'img/test.png'`
+- String individuele character: `string.charAt(0)`
+-
