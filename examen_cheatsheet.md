@@ -1218,20 +1218,42 @@ let filteredArr = arr.filter((waarde) => waarde * 10);
 Je gebruikt `Reduce` wanneer je van een reeks items een nieuwe waarde wilt berekenen. Het resultaat kan van alles zijn (een andere array, nieuw object, booleanse waarde,...).
 
 ```JavaScript
-// arr = [5, 5, 10]
-let value = arr.reduce((accumulator, currentValue) => accumulator += currentValue);
-// value = 20
-```
-
-Ander voorbeeld:
-
-```JavaScript
 const aantalGeslaagden = function(acc, element) {
   return (element >= 10) ? acc + 1 : acc;
 }
 const passed = [10, 8, 12, 15, 4].reduce(aantalGeslaagden, 0);
 //passed = 3
 ```
+
+> **(!)** Vergeet zeker de startwaarde niet in te stellen (de 0 op het einde).
+
+### 11.4 Geavanceerde methodes
+
+- **`forEach()`**
+
+Dit is een generische functie die over een array itereert en een callback functie aanroept tijdens elke iteratie.
+
+```JavaScript
+fruit.forEach((element) => console.log(element));
+```
+
+Zoals de bovenstaande functies, heeft de `forEach` functie ook een `value`, `index` en `array` waarde.
+
+```JavaScript
+fruit.forEach((item, index, array) => {
+  console.log(`${item} is at index ${index} in ${array}`);
+});
+```
+
+- **`find`** & **`findIndex`**
+
+Retourneert (de index van) het eerste element waarvoor de callback voorwaarde true retourneert (dus hetzelfde als `indexOf`, maar hier kan je er een voorwaarde bijstoppen).
+
+```JavaScript
+let result = original.find(p => p.firstname === 'Piet');
+```
+
+> **(!)** Als er niets gevonden is, retourneert `findIndex` -1 en `find` _undefined_.
 
 ### Tips & tricks
 
