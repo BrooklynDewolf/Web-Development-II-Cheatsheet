@@ -479,6 +479,12 @@ Er zijn verschillende manieren om een Array te bewerken.
 - `shift()` verwijdert de eerste waarde in array EN returnt deze
 - `unshift()` voegt één of meerdere waarden toe aan het begin van het array
 
+Je kan dingen verwijderen uit een array met het `delete` keyword.
+
+```JavaScript
+delete fruit[1];
+```
+
 ### 8.2 Array methodes
 
 - `concat()` voegt 2 arrays samen
@@ -488,7 +494,7 @@ Er zijn verschillende manieren om een Array te bewerken.
 - `sort()` sorteer de elementen in de array (past oude array aan)
 - `indexOf(element)` returnt de index van het eerst voorkomende element dat gelijk is aan het doorgegeven element
 - `lastIndexOf(element)` zelfde als indexOf(), maar begint achteraan
-- `join()` converteert alle elementen van een array tot 1 lange string
+- `join()` converteert alle elementen van een array tot 1 lange string (met eventueel een concatenatieteken dat je tussen de haken kan declareren)
 
 [Hier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections#array_object) vind je meer informatie & methodes over Arrays.
 
@@ -1038,6 +1044,195 @@ BlogEntry.prototype.contains = function(searchText) {
 > rather than imperative, and application state
 > flows through pure functions.
 
+- **Pure functions**
+
+Een pure functie is een voorspelbare functie.
+
+- Als je de functie aanroept krijg je met dezelfde input, steeds dezelfde output
+- Geen side-effects (DOM manipulatie, externe variabelen wijzigen,...)
+
+- **Shared state**
+
+Een shared state is elke variabele of object die bestaat in een gedeelde scope of die wordt doorgegeven naar een andere scope.
+
+```JavaScript
+// Een gedeelde variabele creëren
+let gedeeldeVariabele = 0;
+function verhogen(){
+  gedeeldeVariabele += 1;
+}
+function verdubbelen(){
+  gedeeldeVariabele *= 2;
+}
+verhogen();
+console.log(gedeeldeVariabele);
+verdubbelen();
+console.log(gedeeldeVariabele);
+```
+
+- **Mutable vs Immutable**
+
+```JavaScript
+// Een array maken (muteerbaar)
+const hobbies = [
+‘programmeren’,
+‘gamen’,
+‘voetbal’
+];
+const omgekeerdeHobbies =
+hobbies.reverse();
+console.log(omgekeerdeHobbies);
+//[‘voetbal’, ‘gamen’, ‘programmeren’]
+console.log(hobbies);
+//[‘voetbal’, ‘gamen’, ‘programmeren’]
+
+//-------------------------------------
+
+// Een string maken (niet-muteerbaar)
+const origineel = "Ik ben niet muteerbaar";
+const gewijzigd = origineel.replace("Ik ben niet muteerbaar", "Ik ben gewijzigd");
+
+console.log(gewijzigd);
+// "Ik ben gewijzigd"
+console.log(origineel);
+// "Ik ben niet muteerbaar"
+```
+
+- **Side-effects**
+
+Een side effect is iedere verandering aan de toestand van een applicatie die zichtbaar is buiten de opgeroepen functie (behalve de return waarde).
+
+- **Declaratief vs Imperatief**
+
+- Imperatief
+
+Focust op _hoe_ een programma functioneert. Bestaat uit een beschrijving van de verschillende uit te voeren stappen om een resultaat te bereiken: **flow control**.
+
+- Declaratief
+
+Focust op _wat_ een programma moet bekomen, zonder te specifiëren hoe dit moet bekomen worden (meer black box).
+
+Declaratief maakt gebruik van bestaande functies om de complexheid te verminderen.
+
+### 11.1 Arrays
+
+Korte herhaling i.v.m. lussen:
+
+```JavaScript
+// De klassieke manier
+for (let i = 0; i < fruit.length; i++) {
+  console.log(fruit[i]);
+}
+// Nog een manier met behulp van for-of
+for(let element of fruit){
+  console.log(element);
+}
+```
+
+### 11.2 Callback functies
+
+Er zijn een aantal geavanceerde methodes voor arrays. Deze werken met het concept van een callback functie. Een callback functie is een functie die wordt uitgevoerd **NADAT** een andere functie klaar is.
+
+Denk maar aan een event listener.
+
+```JavaScript
+button.addEventListener('click', callBackFunction);
+```
+
+De functie `callBackFunction` zal pas NA het click-event worden afgehandeld.
+
+Je kan dit ook manueel doen door de functie mee te geven aan de eerste functie. Voorbeeld:
+
+```JavaScript
+function doHomework(subject, callback) {
+  console.log(`Starting my ${subject} homework.`);
+  callback();
+}
+function alertFinished(){
+  console.log('Finished my homework');
+}
+doHomework('math', alertFinished);
+```
+
+### 11.3 Map - Filter - Reduce
+
+[`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map), [`Filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) en [`Reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) zijn geavanceerde methodes van de Array die de functionele programmeerstijl onderschrijven aan de hand van een callback functie.
+
+We moeten dus aan deze methodes een callback functie meegeven. Normaliter doen we dit met de array notatie, maar dit is niet verplicht.
+
+De callback functie wordt opgeroepen voor **ieder** item in de array. Bij iedere iteratie krijgt de functie automatisch een aantal argumenten mee:
+
+- `Value` - de huidige waarde tijdens de iteratie
+- `Index` - de huidige index (teller) van de iteratie
+- `Array` - een kopie van de hele array
+
+> **(!)** Al deze methodes geven een nieuwe array terug, ze passen de oude array **NIET** aan.
+
+We hebben dus 3 manieren waarop we dit kunnen noteren.
+
+1. Aparte (niet anonieme) functie
+
+```JavaScript
+arr.map(callbackFunctie);
+
+function callbackFunctie(value, index, array) {
+  return ...;
+}
+```
+
+2. Inline versie met anonieme functie
+
+```JavaScript
+arr.map(function(value, index, array) {
+  return ...;
+});
+```
+
+3. Arrow notatie **(aanbevolen)**
+
+```JavaScript
+arr.map((value, index, array) => {...})
+```
+
+### 11.3.1 Filter
+
+Stel: je hebt een array en wilt bepaalde items er uit filteren. Dan gebruik je het best `filter`. Het resultaat is een **nieuwe** array met enkel de items die aan de filter voldoen.
+
+```JavaScript
+//Dit zal alle waarden kleiner dan 6 returnen in een nieuwe array.
+let filteredArray = arr.filter((waarde) => waarde < 6);
+```
+
+### 11.3.2 Map
+
+Je gebruikt `Map` wanneer je een reeks items wilt transformeren. Het resultaat is een nieuwe array van exact dezelfde lengte die de gemanipuleerde items bevat.
+
+```JavaScript
+// arr = [5, 10]
+let filteredArr = arr.filter((waarde) => waarde * 10);
+// filteredArr = [50, 100]
+```
+
+### 11.3.3 Reduce
+
+Je gebruikt `Reduce` wanneer je van een reeks items een nieuwe waarde wilt berekenen. Het resultaat kan van alles zijn (een andere array, nieuw object, booleanse waarde,...).
+
+```JavaScript
+// arr = [5, 5, 10]
+let value = arr.reduce((accumulator, currentValue) => accumulator += currentValue);
+// value = 20
+```
+
+Ander voorbeeld:
+
+```JavaScript
+const aantalGeslaagden = function(acc, element) {
+  return (element >= 10) ? acc + 1 : acc;
+}
+const passed = [10, 8, 12, 15, 4].reduce(aantalGeslaagden, 0);
+//passed = 3
+```
+
 ### Tips & tricks
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
@@ -1045,3 +1240,10 @@ BlogEntry.prototype.contains = function(searchText) {
 - String individuele character: `string.charAt(0)`
 - Om iets in een string te zoeken, gebruiken we `str.includes()`
 - Willekeurig getal genereren: `Math.floor(Math.random() * 10) + 1` (tussen 1 en 10)
+- Enhanced for bij Arrays:
+
+```JavaScript
+for(let element of fruit){
+  console.log(element);
+}
+```
