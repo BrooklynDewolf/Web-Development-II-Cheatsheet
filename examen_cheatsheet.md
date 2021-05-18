@@ -817,6 +817,12 @@ try {
 }
 ```
 
+of kort:
+
+```JavaScript
+throw new Error('You must give the blog a title')
+```
+
 ## 10. OOP in JavaScript
 
 JavaScript is een object-gebaseerde taal gebaseerd op **prototypes**, in plaats van op klassen.
@@ -824,6 +830,8 @@ JavaScript is een object-gebaseerde taal gebaseerd op **prototypes**, in plaats 
 ### 10.1 Klasse declaratie
 
 De klasse declaratie maakt een nieuwe klasse aan gebruik makend van de prototype-gebaseerde overerving.
+
+> **(!)** Klassen worden niet gehoist!
 
 Standaard klasse layout:
 
@@ -952,9 +960,88 @@ console.log(`date: ${aBlogEntry.date}`);
 
 Methods zijn hetzelfde als functies, maar dan in een klasse.
 
+```JavaScript
+class BlogEntry {
+  constructor(body, date) {
+    this._body = body;
+    this._date = date;
+  }
+
+  get body() { return this._body; }
+  set body(value) {
+    this._body = value;
+  }
+  get date() { return this._date; }
+
+  resetBody() {
+    this._body = '';
+  }
+}
+```
+
+Men kan deze methode dan makkelijk aanroepen met `BlogEntry.resetBody();`
+
+Je kan ook static methods maken. Dit doe je op exact dezelfde manier als gewone methods, maar je plaatst het keyword `static` voor de methodenaam.
+
+Voorbeeld: `static createDummy() { return new this('Nothing much to say'); }`
+
+### 10.2 Prototypes
+
+In JavaScript is alles een object, er bestaan geen klassen zoals we die kennen uit Java. Via prototype objecten kunnen objecten toestand en gedrag delen.
+
+- een object heeft zijn eigen properties en methodes
+- een object heeft een property `__proto__`
+- `__proto__` is het prototype object via dewelke het object gedrag en toestand erft
+
+> Het prototype object is ook maar een object. Dit wil zeggen dat deze op zijn beurt ook een prototype object heeft. Zo ontstaat er een ketting van prototype objecten: **prototype chain**.
+
+Men kan dan een property toevoegen aan het prototype van een object. Kortweg is dit een soort 'globale' variabele voor alle objecten van dit type. Een voorbeeld:
+
+```JavaScript
+const myBlogEntry = new BlogEntry('Prototypes rock!');
+const anotherEntry = new BlogEntry('JavaScript rules!');
+BlogEntry.prototype.language = 'EN';
+console.log(myBlogEntry.language); // EN
+console.log(anotherEntry.language); // EN
+```
+
+Als je achteraf de property nog gaat bijwerken, maar niet van de property, dan is dit van het object zelf. Voorbeeld:
+
+```JavaScript
+const myBlogEntry = new BlogEntry('Prototypes rock!');
+const anotherEntry = new BlogEntry('JavaScript rules!');
+BlogEntry.prototype.language = 'EN';
+
+console.log(myBlogEntry.language); // EN
+console.log(anotherEntry.language); // EN
+myBlogEntry.language = 'NL';
+console.log(myBlogEntry.language); // NL
+console.log(anotherEntry.language); // EN
+```
+
+Dit kan ook perfect met bv. functions.
+
+```JavaScript
+const myBlogEntry = new BlogEntry('Prototypes rock!');
+const anotherEntry = new BlogEntry('JavaScript rules!');
+BlogEntry.prototype.language = 'EN';
+BlogEntry.prototype.contains = function(searchText) {
+  return this.body.toUpperCase().indexOf(searchText.toUpperCase()) !== -1;
+};
+```
+
+## 11. Functioneel programmeren
+
+> Functional programming is the process of
+> building software by composing pure functions,
+> avoiding shared state, mutable data, and side effects. Functional programming is declarative
+> rather than imperative, and application state
+> flows through pure functions.
+
 ### Tips & tricks
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
 - Element src bewerken: `document.getElementById('test').src = 'img/test.png'`
 - String individuele character: `string.charAt(0)`
--
+- Om iets in een string te zoeken, gebruiken we `str.includes()`
+- Willekeurig getal genereren: `Math.floor(Math.random() * 10) + 1` (tussen 1 en 10)
