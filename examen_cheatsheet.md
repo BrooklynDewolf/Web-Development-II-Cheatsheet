@@ -1203,7 +1203,7 @@ Stel: je hebt een array en wilt bepaalde items er uit filteren. Dan gebruik je h
 let filteredArray = arr.filter((waarde) => waarde < 6);
 ```
 
-### 11.3.2 Map
+### 11.3.2 Map (function)
 
 Je gebruikt `Map` wanneer je een reeks items wilt transformeren. Het resultaat is een nieuwe array van exact dezelfde lengte die de gemanipuleerde items bevat.
 
@@ -1245,7 +1245,7 @@ fruit.forEach((item, index, array) => {
 });
 ```
 
-- **`find`** & **`findIndex`**
+- **`find()`** & **`findIndex()`**
 
 Retourneert (de index van) het eerste element waarvoor de callback voorwaarde true retourneert (dus hetzelfde als `indexOf`, maar hier kan je er een voorwaarde bijstoppen).
 
@@ -1253,7 +1253,228 @@ Retourneert (de index van) het eerste element waarvoor de callback voorwaarde tr
 let result = original.find(p => p.firstname === 'Piet');
 ```
 
-> **(!)** Als er niets gevonden is, retourneert `findIndex` -1 en `find` _undefined_.
+> **(!)** Als er niets gevonden is, retourneert `findIndex()` -1 en `find()` _undefined_.
+
+- **`sort()`**
+
+We gebruiken `sort()` om een array te sorteren. Tussen de haken kunnen we een comparator meegeven. Indien je geen comparator voorziet, worden de elementen van de array omgezet naar strings en wordt er 'alfabetisch' gesorteerd.
+
+> **(!)** De array wordt **in-place** gesorteerd, dit wil zeggen dat de sort function de gesorteerde array retourneert, dit is dus **GEEN** kopie van de originele array.
+
+```JavaScript
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.sort();
+```
+
+Voorbeeld van compare methode:
+
+```JavaScript
+function compare(a, b) {
+  if (a > b) return 1; // een positief getal betekent dat a groter is dan b
+  if (a == b) return 0;
+  if (a < b) return -1; // een negatief getal betekent dat a kleiner is dan b
+}
+```
+
+Een korter geschreven sort methode:
+
+```JavaScript
+fruit.sort((a, b) => a.length - b.length);
+```
+
+Er bestaan nog veel meer handige array methodes (zie [MDN website](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)).
+
+### 11.4 Maps (storage)
+
+Het `Map` object bevat key-value pairs. Het onthoudt de originele volgorde waarop de keys in de map zijn gestoken.
+
+Om een nieuwe `Map` te maken, gebruiken we de constructor van `Map`:
+
+```JavaScript
+const population = new Map();
+```
+
+- **`set()`**
+
+Om key-value pairs toe te voegen in de map gebruiken we de `set()` functie.
+
+```JavaScript
+population.set('Belgium', 11589623);
+population.set('Burkina Faso', 3273);
+```
+
+De `set()` functie retourneert de aangepaste map, dit maakt method chaining mogelijk.
+
+```JavaScript
+population
+  .set('Belgium', 11589623)
+  .set('Burkina Faso', 20903273);
+```
+
+- **`get()`**
+
+De `get(key)` functie geeft de value weer dat bij de key hoort. Als de key niet gevonden is, wordt `undefined` geretourneerd.
+
+```JavaScript
+console.log(population.get('Belgium')); //11589623
+```
+
+- **`has()`**
+
+De `has(key)` functie retourneert een boolean die aangeeft of een try met de opgegeven key aanwezig is in de Map.
+
+```JavaScript
+if (population.has(country))
+  alert(`${population.get(country)} people live in ${country}`);
+else
+  alert(`We have no data for ${country}`);
+```
+
+- **`delete()`**
+
+Via de boolse methode `delete(key)` kan je een entry met opgegeven key verwijderen uit een Map.
+
+```JavaScript
+if (population.delete(country))
+  alert(`The entry for ${country} was deleted`);
+else
+  alert(` Couldn't not delete ${country}...`);
+```
+
+- **`clear()`**
+
+Gebruik `clear()` om een map in 1 stap te ledigen.
+
+```JavaScript
+population.clear();
+```
+
+- **`keys()`**
+
+De `keys()` methode retourneert een itereerbaar object met alle keys. Je kan deze overlopen met `for .. of`.
+
+```JavaScript
+message = 'Keys in our map:\n';
+for (const key of population.keys()) {
+  message += `${key}\n`;
+}
+alert(message);
+```
+
+- **`values()`**
+
+De `values()` methode retourneert een itereerbaar object met alle values. Je kan deze overlopen met `for .. of`.
+
+- **`entries()`**
+
+De `entries()` methode retourneert een itereerbaar object met alle entries. Iedere entry zit in een array van lengte 2.
+
+```JavaScript
+message = 'Entries in our map:\n';
+for (const entry of population.entries()) {
+  message += `${entry[0]} has ${entry[1]} people.\n`;
+}
+alert(message);
+```
+
+> **(!)** TIP: Maak gebruik van array destructuring:
+>
+> ```JavaScript
+> for (const [key, value] of population.entries()) {
+>   message += `${key} has ${value} people.\n`;
+> }
+> ```
+
+- **`forEach()`**
+
+Op Map is ook de `forEach(callback)` gedefineerd. Nu weliswaar met 3 andere argumenten: `value`, `key`, `Map` (exacte volgorde).
+
+> Via de `size` property kan je weten hoeveel key-value pairs een map bevat.
+>
+> ```JavaScript
+> alert(`We have data for ${population.size} countries.`);
+> ```
+
+### 11.4.1 Map constructor revisited
+
+Je kan een array argument gebruiken om een map te creëren met een aantal entries. In deze array stop je key-value pairs in de vorm `[key, value]`.
+
+```JavaScript
+population = new Map([
+  ['Belgium', 11589623],
+  ['Burkina Faso', 20903275],
+  ['Iceland', 341243],
+]);
+```
+
+### 11.4.2 Objecten als keys
+
+```JavaScript
+const bel = {
+  name: 'Belgium',
+  region: 'Europe'
+};
+
+population.set(bel, 11589623);
+alert(`${population.get(col)} live in
+${col.name}`);
+```
+
+### 11.5 Sets
+
+Het `Set` object onthoudt **unieke** waarden (er zijn dus geen duplicate waarden).
+
+```JavaScript
+let viewers = new Set();
+
+//of direct met initiële waarden
+let viewers = new Set(["bill.gates@microsoft.com", "elon.musk@tesla.com", "michael.scott@dundermifflin.com"]);
+```
+
+- **`add()`**
+
+Met de `add(value)` methode kan je dingen toevoegen aan een `Set`, indien de value nog niet aanwezig is. De methode returned de al dan niet gewijzigde set.
+
+Je kan de `add()` methode ook chainen.
+
+```JavaScript
+viewers
+.add('michael.scott@dundermifflin.com')
+.add('bill.gates@microsoft.com');
+```
+
+- **`has()`**
+
+De `has(value)` methode retourneert een boolean die aangeeft of de opgegeven value aanwezig is in de `Set`. Zoals bij de `Map` wordt er hier ook gebruik gemaakt van `===`.
+
+> Met de `size` property kunnen we het aantal values opvragen in de `Set`.
+
+- **`delete()`**
+
+Via de boolse methode `delete(value)` kan je een value verwijderen uit een `Set`.
+
+We kunnen `clear()` gebruiken om de hele `Set` direct te ledigen.
+
+- **`values()`** en **`entries()`**
+
+  - `values()` retourneert een itereerbaar object met alle values
+  - `entries()` retourneert een itereerbaar object met alle [value, value] pairs (enkel voor compatibiliteit met Map)
+
+- **`forEach()`**
+
+Een `Set` heeft ook een de `forEach(callback)` gedefinieerd.
+
+De callback heeft 3 argumenten: `currentValue`, `currentKey` en `set`.
+Omdat `Set` geen keys heeft, is `currentKey` gelijk aan `currentValue`.
+
+```JavaScript
+let message = 'All strings in the set:\n';
+viewers.forEach((value) => message += typeof value === 'string' ? `${value}\n` : '');
+alert(message);
+```
+
+### 11.6 Rest & spread syntax
+
 
 ### Tips & tricks
 
@@ -1265,7 +1486,9 @@ let result = original.find(p => p.firstname === 'Piet');
 - Enhanced for bij Arrays:
 
 ```JavaScript
-for(let element of fruit){
+for(let element of fruit) {
   console.log(element);
 }
 ```
+
+- String naar array: `arr.split('');`
