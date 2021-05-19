@@ -1558,12 +1558,22 @@ Via de rest parameter syntax kunnen we een onbepaald aantal argumenten aanlevere
 ```JavaScript
 function showName(lastname, ...firstnames) {
   console.log(`De parameter firstnames bevat ${firstnames}`);
-  const i = firstnames.reduce((initials, current) => initials + current[0], '');
+  const i = firstnames.reduce((initials, value) => initials + value[0], '');
     return `${i} ${lastname}`;
   }
 console.log(showName('Rowling', 'Joanne', 'Kathleen')); //JK Rowling
 console.log(showName('Rubens', 'Pieter', 'Paul')); //PP Rubens
 ```
+
+Het `rest` pattern laat ook toe het resterende deel van een array vast te nemen in een een variabele tijdens array destructuring.
+
+```JavaScript
+const [a, ...b] = ['Jan', 'Piet', 'Korneel', 'Steven', 'Maarten'];
+console.log(a); //Jan
+console.log(b); //['Piet', 'Korneel', 'Steven', 'Maarten']
+```
+
+> **(!)** Je kan de rest operator enkel bij de laatste in de rij van variabelen zetten.
 
 ### Tips & tricks
 
