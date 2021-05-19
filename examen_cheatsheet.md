@@ -397,8 +397,6 @@ for(let key in myAvatar) {
 }
 ```
 
-- ``
-
 We kunnen herhalingen onderbreken met [`break`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/break) of [`continue`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/continue).
 
 ## 7. Operatoren
@@ -1225,6 +1223,13 @@ const passed = [10, 8, 12, 15, 4].reduce(aantalGeslaagden, 0);
 //passed = 3
 ```
 
+Voorbeeld met arrow function:
+
+```JavaScript
+console.log(inventors.reduce((acc, value, index, array) => acc + (value.passed - value.year), 0));
+
+```
+
 > **(!)** Vergeet zeker de startwaarde niet in te stellen (de 0 op het einde).
 
 ### 11.4 Geavanceerde methodes
@@ -1574,6 +1579,172 @@ console.log(b); //['Piet', 'Korneel', 'Steven', 'Maarten']
 ```
 
 > **(!)** Je kan de rest operator enkel bij de laatste in de rij van variabelen zetten.
+
+### 12. Webstorage
+
+Er zijn verschillende soorten webstorage, denk maar aan:
+
+- Cookies
+- Session Storage
+- Local Storage
+- IndexedDB (niet behandeld in de cursus)
+
+### 12.1 Cookies
+
+Cookies worden meestal ingesteld door een webserver. Vervolgens voegt de browser ze automatisch toe aan (bijna) iedere request op hetzelfde domein.
+
+Cookies zijn een ingebouwde manier om kleine tekstbestanden heen en weer te sturen tussen de browser en de server. Servers kunnen gebruik maken van de inhoud van deze cookies om informatie over de gebruiker bij te houden over verschillende webpagina's heen.
+
+Cookies blijven bestaan, ook als je de tab of browser sluit. De cookie kan manueel verwijderd worden, of wordt automatisch verwijderd indien de vervaldatum bereikt is.
+
+### 12.1.1 Cookie-structuur
+
+Een cookie is gevormd door `key-value pairs` gescheiden door `;`.
+
+Voorbeeld:
+
+```JSON
+"user=John; path=/; expires=Tue, 19 Jan 2038 03:14:07 GMT"
+```
+
+Cookies hebben verschillende opties, veel daarvan zijn belangrijk en moeten worden ingesteld:
+
+- `path`
+- `domain`
+- `expires`, `max-age`
+- `secure`
+- `httpOnly`
+
+### 12.1.2 Cookies toevoegen en verwijderen
+
+Om cookies toe te voegen, kunnen we naar `document.cookie` schrijven, maar het is geen data eigenschap, het is een accessor (getter/setter). Een schrijfoperatie naar `document.cookie` werkt alleen de cookies bij die erin worden genoemd, maar muteert geen andere cookies.
+
+**Cookie instellen**
+
+```JavaScript
+document.cookie = 'taal=NL';
+```
+
+**Cookie verwijderen**
+
+Om een cookie te verwijderen stellen we de `max-age` in op 1 seconde in het verleden.
+
+```JavaScript
+document.cookie = 'taal=;max-age=-1'
+```
+
+### 12.1.3 Cookies encoderen
+
+Technisch gezien kunnen key en value alle karakters hebben, om de geldige opmaak te behouden (spaties) moeten ze worden escaped met behulp van de ingebouwde `encodeURIComponent` functie.
+
+```JavaScript
+const name = "my name"; // let op de spatie
+const value = "John Smith"
+const encodedName = encodeURIComponent(name);
+const encodedValue = encodeURIComponent(value);
+// encodes the cookie as my%20name=John%20Smith
+document.cookie = encodedName + '=' + encodedValue;
+alert(document.cookie); // ...; my%20name=John%20Smith
+```
+
+### 12.2 Webstorage
+
+De webstorage objecten `localStorage` en `sessionStorage` maken het mogelijk om key/value pairs op te slaan in de browser.
+
+Interessant is dat de data een pagina refresh overleeft (`sessionStorage`) en zelfs een volledige herstart van de browser (`localStorage`).
+
+**Verschillen met cookies**
+
+- Data wordt niet bij iedere request verstuurd.
+- Kan meer data stockeren, maar is geen databank zoals SQL.
+- De server kan de data niet manipuleren, alles blijft op de client.
+- Per domein, de ene website kan de data van een andere dus niet muteren.
+- Data is toegankelijk voor de gebruiker, bij cookies kan het zijn dat de server de cookie zet en is dus niet leesbaar door `httpOnly`.
+
+**Verschillen tussen `localStorage` en `sessionStorage`**
+
+- `localStorage`
+  - Beschikbaarheid van data over meerdere tabbladen/vensters van hetzelfde domein
+  - Data blijft beschikbaar als het venster, tabblad of browser sluit
+- `sessionStorage`
+  - Beschikbaarheid per tabblad/venster, wordt niet gedeeld met een ander venster of tabblad
+  - Data is verdwenen na het sluiten van venster of tabblad.
+
+**Nadelen van webstorage**
+
+- Er kunnen enkel strings opgeslagen worden
+- De inhoud kan door de gebruiker bekeken, gewijzigd en verwijderd worden.
+- Per domein.
+
+### 12.2.1 Webstorage bewerken
+
+Voor zowel `localStorage` als `sessionStorage` gebruikt men de `Storage` interface.
+
+- **Data opslaan**
+
+```JavaScript
+localStorage.setItem('test', 1);
+```
+
+> Let op: Beide zijn uiteindelijk van het type `string`
+
+- **Data ophalen**
+
+```JavaScript
+console.log(localStorage.getItem('test')); // 1
+```
+
+- **Data verwijderen**
+
+```JavaScript
+localStorage.removeItem('test');
+```
+
+- **Alle data verwijderen**
+
+```JavaScript
+localStorage.clear();
+```
+
+- **Alle key-value pairs doorlopen (als object)**
+
+```JavaScript
+for(let key in localStorage) {
+  alert(key); // shows getItem, setItem and other built-in stuff
+}
+```
+
+> Opgelet: hier worden ook de built-in fields teruggegeven
+
+Als object itereren zonder built in fields:
+
+```JavaScript
+for(let key in localStorage) {
+  if (!localStorage.hasOwnProperty(key)) {
+    continue; // skip keys like "setItem", "getItem" etc
+   }
+  alert(`${key}: ${localStorage.getItem(key)}');
+}
+```
+
+- **Alle key-value pairs overlopen (als object, zonder built in fields)**
+
+Hiervoor gebruiken we `Object.keys(localStorage)`.
+
+```JavaScript
+let keys = Object.keys(localStorage);
+for(let key of keys) {
+  alert(`${key}: ${localStorage.getItem(key)}');
+}
+```
+
+Via de `Object.entries` methode, key-value pairs doorlopen
+
+```JavaScript
+for (let [key, value] of Object.entries(localStorage)) {
+  console.log(`${key}: ${value}');
+}
+```
 
 ### Tips & tricks
 
