@@ -1475,6 +1475,95 @@ alert(message);
 
 ### 11.6 Rest & spread syntax
 
+### 11.6.1 Spread syntax
+
+Via de spread syntax kunnen we iterable 'uitklappen' in afzonderlijke elementen. Deze elementen kunnen dan gebruikt worden
+
+- als argumenten bij functie aanroepen
+- als elementen van een array bij de array literal notation
+
+Voorbeeld:
+
+```JavaScript
+const numbers = [20, 30, 40, 50];
+//Op plaatsen in je script waar je 20, 30, 40, 50 wil gebruiken kan je ...numbers zetten.
+
+//Bv. in een functieaanroep Math.max(1, 20, 30, 40, 50, 8); wordt =>
+Math.max(1, ...numbers, 8);
+
+//Bv. in een array literal const numbers2 = [-1, 5, 11, 20, 30,40, 50]; wordt =>
+const numbers2 = [-1, 5, 11, ...numbers];
+```
+
+Je kan de spread syntax gebruiken om bepaalde dingen 'om te vormen'. Bijvoorbeeld:
+
+- `string` -> karakters
+- `map` -> [key, value] pairs
+- `map.keys()` -> keys
+- `map.values()` -> values
+- `set` -> values
+- `set.values()` -> values
+- `array` -> elementen
+
+Voorbeeld:
+
+```JavaScript
+const aSet = new Set(["tom.antjon@hogent.be", "
+stefaan.decock@hogent.be"]);
+console.log([1, 2, ...aSet, 3, 4]);
+
+//OUTPUT: (6) [1, 2, "tom.antjon@hogent.be", "stefaan.decock@hogent.be", 3, 4]
+
+const aMap = new Map([
+['Belgium', 11589623],
+['Burkina Faso', 20903275],
+['Iceland', 341243],
+]);
+
+const numbers = [-1, 5, 11, 3];
+console.log(Math.max(...numbers)); // 11
+console.log(Math.max(1, 10, ...numbers, 20, 2)); //20
+console.log(Math.max(...aMap.values())); //20903275
+```
+
+Je kan de spread operator ook gebruiken om arrays samen te voegen:
+
+```JavaScript
+const arr1 = ['Jan', 'Piet'];
+const arr2 = ['Joris', 'Korneel'];
+// maak een shallow copy die de inhoud van beide arrays bevat:
+const arr12 = [...arr1, ...arr2];
+console.log(arr12); // ["Jan", "Piet", "Joris", "Korneel"]
+// voeg aan arr1 de elementen van arr2 toe
+arr1.push(...arr2);
+console.log(arr1); // ["Jan", "Piet", "Joris", "Korneel"]
+```
+
+Door verschillend functies samen te voegen kan men krachtige dingen doen. Enkele voorbeelden:
+
+```JavaScript
+//Map aanpassen zodat enkel landen met meer dan 5000000 inwoners overblijven
+console.log(`Original map:`);
+console.log(population);
+population = new Map([...population].filter(
+([country, population]) => population > 5000000));
+console.log(`Map without big countries:`);
+console.log(population)
+```
+
+### 11.6.2 Rest parameter
+
+Via de rest parameter syntax kunnen we een onbepaald aantal argumenten aanleveren aan de parameter van een functie. **Dit moet de laatste parameter van een functie zijn**.
+
+```JavaScript
+function showName(lastname, ...firstnames) {
+  console.log(`De parameter firstnames bevat ${firstnames}`);
+  const i = firstnames.reduce((initials, current) => initials + current[0], '');
+    return `${i} ${lastname}`;
+  }
+console.log(showName('Rowling', 'Joanne', 'Kathleen')); //JK Rowling
+console.log(showName('Rubens', 'Pieter', 'Paul')); //PP Rubens
+```
 
 ### Tips & tricks
 
@@ -1491,4 +1580,4 @@ for(let element of fruit) {
 }
 ```
 
-- String naar array: `arr.split('');`
+- String naar array: `str.split('');` of `[...str]`
