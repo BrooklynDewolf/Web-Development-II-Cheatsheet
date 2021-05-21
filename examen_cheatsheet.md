@@ -806,6 +806,14 @@ const init = function () {
 window.onload = init;
 ```
 
+Nog een voorbeeld:
+
+```JavaScript
+imgElem.onclick = () => {
+        this.verwijderZoekterm(value);
+};
+```
+
 Meer info vind je [hier](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events).
 
 ### 9.5 Exceptions
