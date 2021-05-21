@@ -483,6 +483,13 @@ Je kan dingen verwijderen uit een array met het `delete` keyword.
 delete fruit[1];
 ```
 
+> Opgelet: Door `delete` te gebruiken zal er `undefined` in de lijst te komen staan. Om dit te voorkomen gebruiken we `arr.splice()`
+
+```JavaScript
+fruit.splice(1, 1);
+// Dit zal de waarde op index 1 verwijderen.
+```
+
 ### 8.2 Array methodes
 
 - `concat()` voegt 2 arrays samen
