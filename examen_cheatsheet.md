@@ -1746,6 +1746,218 @@ for (let [key, value] of Object.entries(localStorage)) {
 }
 ```
 
+### 12.3 **J**ava**S**cript **O**bject **N**otation (JSON)
+
+Om objecten op te slaan als strings in bijvoorbeeld localStorage, zouden we zelf een toString() methode kunnen schrijven. Het nadeel: dit zou een maintenance nightmare zijn aangezien men dit snel zou vergeten als we waarden toevoegen. We gaan dus gebruik maken van JSON.
+
+Een object omzetten naar string met JSON:
+
+```JavaScript
+let student = {
+  name: 'John',
+  age: 30,
+  isAdmin: false,
+  courses: ['html', 'css', 'js'],
+  wife: null
+};
+let json = JSON.stringify(student);
+```
+
+Een JSON string omzetten naar object:
+
+```JavaScript
+let user = JSON.parse(userDataStr);
+```
+
+> JSON is wel gevoelig voor subtiele typfouten, let dus goed op of gebruik een validator
+
+## 13. **D**ocument **O**bject **M**odel (DOM)
+
+Wat is DOM?
+
+Vanuit een programma kan je een HTML document als volledig object benaderen.
+
+- Bouwt een boomvoorstelling van het HTML document in het geheugen
+- Biedt klassen en methodes (tree-gebaseerde API) aan om via code door de boom te navigeren en bewerkingen uit te voeren.
+
+Een boom is opgebouwd uit verschillende nodes. Een node kan zijn:
+
+- Document
+
+Een **DOCUMENT_NODE** bevat de toegangspoort tot het DOM, het stelt het volledige document voor. Deze bevat een verwijzing naar het <html>-element.
+
+- Element
+
+Ieder html-element komt overeen met een **ELEMENT_NODE** in de boom
+
+- Text
+
+De tekst-inhoud van een element is een **TEXT_NODE**, voorgesteld als child van het element-node.
+
+Om makkelijk elementen op te halen uit een HTML pagina, maken we gebruik van het `id` attribuut.
+
+```JavaScript
+const element = document.getElementById('productdetails');
+```
+
+### 13.1 JavaScript en de DOM (dynamisch updaten van de pagina)
+
+Er zijn verschillende manieren om de DOM-tree te wijzigen, vertrekkend van een element:
+
+- `insertAdjacentHTML(...,...)`
+- `innerHTML(...)`
+- `createElement(...)` + `setAttribute(...)` + `appendChild(...)`
+
+- **`insertAdjacentHTML()`**
+
+De functie `insertAdjacentHTML(position, text)` parset d meegeven HTML-tekst en voegt de resulterende nodes toe aan de DOM structuur op de meegegeven positie.
+
+Posities:
+
+```JavaScript
+element.insertAdjacentHTML(position, text);
+// Position moet 1 van de volgende waarden zijn:
+// 'beforebegin' - voor het element
+// 'afterbegin' - juist binnen het element, voor het eerste kindelement
+// 'beforeend' - juist binnen het element, na het laatste kindelement
+// 'afterend' - na het element (ev. closing bracket)
+```
+
+```HTML
+<!-- beforebegin --->
+<p>
+  <!-- afterbegin-->
+  foo
+  <!-- beforeend-->
+</p>
+<!-- afterend -->
+```
+
+Voorbeeld:
+
+```HTML
+<p id="pId">Dit is de paragraaf</p>
+```
+
+```JavaScript
+const element = document.getElementById('pId');
+element.insertAdjacentHTML('afterbegin', '<div>Dit is de toegevoegde div</div>');
+```
+
+```HTML
+<p id="pId"
+><div>Dit is de toegevoegde div</div>
+Dit is de paragraaf</p>
+```
+
+- **`innerHTML()`**
+
+Via de `innerHTML`-property van een element kan je de HTML die zich binnen dat element bevindt opvragen/wijzigen. Merk op dat als je de innerHTML wijzigt, je alles die binnen het element aanwezig was overschrijft.
+
+```JavaScript
+const content = element.innerHTML;
+element.innerHTML = htmlString;
+```
+
+Voorbeeld:
+
+```HTML
+<p id="pId">Dit is de paragraaf</p>
+```
+
+```JavaScript
+const element = document.getElementById('pId');
+element.innerHTML = '<div>Dit is een div!</div>';
+```
+
+```HTML
+<p id="pId"><div>Dit is een div!</div></p>
+```
+
+### 13.2 Nodes
+
+Je kan ook zelf expliciet nodes maken en toevoegen aan de DOM-tree.
+
+### 13.2.1 Nodes bewerken
+
+- Creatie van nodes
+
+  - `const anElementNode = createElement(tagName)`
+  - `const aTextNode = createTextNode(text)`
+
+- Toevoegen van een node
+
+  - `node.appendChild(newChild)`
+    Voegt een node `newChild` toe na de laatste child-node van `node`. De nieuwe toegevoegde node wordt geretourneerd.
+
+```JavaScript
+const divElement = document.createElement("div");
+divElement.setAttribute("id", "divId");
+const divTekst = document.createTextNode("Hier is de tekst voor de div...");
+divElement.appendChild(divTekst);
+element.appendChild(divElement);
+```
+
+- Verwijderen van een node
+
+  - `removeChild(removeChild)`
+    Verwijdert een child node van de document tree. De verwijderde node wordt geretourneerd (en kan dus eventueel nog verder gebruikt worden)
+
+- Vervangen van een node
+
+  - `replaceChild(newChild, oldChild)`
+    Vervangt de _oldChild_ node voor de _newChild_ node. De verwijderde oldchild node wordt geretourneerd (en kan dus eventueel nog verder gebruikt worden).
+
+- Clonen van een node
+  - `cloneNode(deepcopy)`
+    Creëert en retourneert een exacte kloon. Als de boolean parameter _deepCopy_ gelijk is aan true wordt een kloon gemaakt van de node zelf en de volledige subtree, anders wordt enkel een kloon gemaakt van de node zelf.
+
+### 13.2.2 Node attributen bewerken
+
+- `setAttribute(attrName, attrValue)`
+
+Wordt gebruikt om een attribuut in te stellen. Voorbeeld:
+
+```JavaScript
+const divElement = document.createElement("div");
+divElement.setAttribute("id", "divId");
+```
+
+- `getAttribute(attrName)`
+
+Het attribuut van een node verkrijgen.
+
+- `removeAttribute(attrName)`
+
+Een attribuut van een node verwijderen.
+
+### 13.3 Flexibel nodes selecteren
+
+- `getElementById(id)`
+
+  - geeft het eerste element met de opgegeven _id_
+  - de zoekbewerking start meestal vanaf het document element, maar je kan evengoed van elk ander element starten
+
+- `getElementsByTagName(tagname)`
+
+  - retourneert een **live HTML collection** met alle elementen (0 of meer) met de opgegeven _tagname_
+  - een HTML collection is een array-like object van elementen en voorziet properties en functies om elementen te selecteren in de lijst
+
+- `getElementsByClassName(value)`
+
+  - retourneert een **live HTML collection** met alle elementen met d e opgegeven _value_ als waarde voor het class attribuut
+
+- `querySelector(CSS selector)`
+
+  - retourneert het eerste element dat voldoet aan de opgegeven CSS selector
+
+- `querySelectorAll(CSS selector)`
+  - retourneert een **non live (static)** nodelist met alle elementen die voldoen aan de opgegeven CSS selector
+
+### 13.4 DOM Cheatsheet
+
+Klik [hier](https://christianheilmann.com/stuff/JavaScript-DOM-Cheatsheet.pdf) om de DOM Cheatsheet te bekijken (gemaakt door Christian Heilmann).
+
 ### Tips & tricks
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
@@ -1762,3 +1974,4 @@ for(let element of fruit) {
 ```
 
 - String naar array: `str.split('');` of `[...str]`
+- String naar int: `parseInt(str)`
