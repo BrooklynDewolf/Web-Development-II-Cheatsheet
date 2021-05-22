@@ -2214,7 +2214,170 @@ Bij `Promise.all` stopt de promise als er 1 rejected is, bij `Promise.race` stop
 > - Een eerste probleem is dat een promise altijd start, en altijd afgerond wordt, dus ook als er nooit iemand `.then()` aanroept, of als het resultaat je niet langer interesseert kan je een promise niet 'cancelen'.
 > - Eenmaal een promise afgerond is, kan je ze ook niet makkelijk opnieuw uitvoeren, de promise zelf bevat enkel het resultaat.
 
-### Tips & tricks
+## 15. AJAX - fetch API
+
+**A**synchronous **J**avaScript **A**nd **X**ML (AJAX) is een term voor het ontwerp van interactieve webpagina's waarin asynchroon gevraagde gegevens worden opgehaald van de webserver. Daardoor hoeven dergelijke pagina's in hun geheel ververst te worden.
+
+### 15.1 Een eenvoudig voorbeeld
+
+Om AJAX requests illustreren hebben we een server nodig waar we data kunnen opvragen. We maken gebruik van de [joke API](https://official-joke-api.appspot.com/random_joke).
+
+We schrijven een `ajaxRequest` methode:
+
+```JavaScript
+function ajaxRequest(url){
+	// creatie van het XHR object
+	const request = new XMLHttpRequest();
+	// open(Methode, URL, Asynchronous, Username, Password)
+	request.open('GET', url);
+	// callback functie declareren om de request af te handelen
+	request.onreadystatechange = () => {
+		// readyState en status worden geëvalueerd
+		if (request.readyState === 4 && request.status === 200) {
+			console.log(request.responseText);
+		}
+	};
+	// verstuur het verzoek naar de server
+	request.send();
+}
+
+class JokeApp{
+	getData(){
+		ajaxRequest('https://official-joke-api.appspot.com/random_joke');
+	}
+}
+
+const init = function(){
+	const jokeApp = new JokeApp();
+	document.getElementById("joke").onclick = () => {
+		jokeApp.getData();
+	};
+}
+
+window.onload = init;
+```
+
+Uitleg:
+
+- Om te beginnen maken we een `XMLHttpRequest()` object aan.
+
+- `open` method
+
+  - `open(method, url, asynchronous, userName, password)`
+    - `method` HTTP request method: GET - POST - HEADER - PUT - DELETE
+    - `url` De URL waar het request naar verstuurd wordt (het adres). Dit kan ook een tekst, json, xml bestand zijn.
+    - `asynchronous` boolean die aangeeft of het request al dan niet asynchroon is. Niet verplicht - default true.
+    - `userName` & `password` voor eventuele authenticatie. Beide zijn niet verplicht.
+
+- `send` method
+
+  - verstuurt het request naar de server
+  - data kunnen als parameter naar de server gestuurd worden
+
+- Properties van het XHR object:
+
+  - `readyState` bevat de status van het object
+
+    - `0` - `UNSENT` (client has been created, `open()` not called yet)
+    - `1` - `OPENED` (`open()` has been called)
+    - `2` - `HEADERS_RECEIVED` (`send()` has been called and the headers and status are available)
+    - `3` - `LOADING` (Downloading, `responseText` holds partial data)
+    - `4` - `DONE` (the operation is complete)
+
+  - `status` geeft de http status die door de server is teruggegeven
+
+    - 200: OK
+    - 404: Page not found
+    - ...
+
+  - `onreadystatechange`
+    - koppelt een callback functie
+    - deze wordt uitgevoerd elke keer als de `readyState` van waarde wijzigt
+  - `responseText` is de data dat de server als string teruggeeft (kan ook JSON string zijn)
+  - `reponseXML` is de data die de server teruggeeft als XML
+
+> Heel vaak wordt er een JSON response gegeven. Deze wordt wel als string gedownload, dus vaak moeten we deze nog parsen. Dit kunnen we doen met `const joke = JSON.parse(request.reponseText);`.
+
+### 15.2 AJAX en promises
+
+In plaats van het verwerken van het Ajax request te koppelen aan een callback functie, maken we gebruik van een promise. Voorbeeld:
+
+```JavaScript
+function ajaxRequest(url){
+	return new Promise((resolve, reject) => {
+		const request = new XMLHttpRequest();
+		request.open('GET',url );
+		request.onreadystatechange = () => {
+			if (request.readyState === 4){
+				if (request.status === 200) {
+					resolve(JSON.parse(request.responseText));
+				}
+				else {
+					reject(`ERROR ${request.status} while processing.`);
+				}
+			}
+		}
+		request.send();
+	});
+}
+```
+
+We zien nu dat we de Promise in de return stoppen van een functie (`ajaxRequest`). Zo kunnen we makkelijk parameters doorgeven aan een Promise. Als de `readyState` 4 is en de `status` 200, dan kunnen we de promise resolven. In de resolve geven we het antwoord mee.
+
+Als de `readyState` 4 is, maar het antwoord is **niet** 200, dan wil dit zeggen dat er iets fout is gegaan. Dan rejecten we de promise met de error als argument.
+
+We kunnen dan makkelijk de request verder afhandelen:
+
+```JavaScript
+class JokeApp{
+	getData(){
+		ajaxRequest('https://official-joke-api.appspot.com/random_joke')
+		.then(resolveValue => { this.toHtml(resolveValue); })
+		.catch(rejectValue => { console.log(rejectValue); });
+	}
+	toHtml(joke) {
+		document.getElementById("category").innerHTML = `Category = ${joke.type}`;
+		document.getElementById("setup").innerHTML = `Q: ${joke.setup}`;
+		document.getElementById("punchline").innerHTML = `A: ${joke.punchline}`;
+	}
+}
+```
+
+### 15.3 Fetch API
+
+Om een AJAX request uit te voeren moet er steeds dezelfde code gebruikt worden. Om dit op en meer gestructureerde manier en compacter te doen is de [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) ontwikkeld.
+
+De Fetch API is vergelijkbaar met de werking van XHR.
+
+- de `fetch()` methode heeft één verplicht argument, het 'path' (vaak url) naar de 'resource' die je wil ophalen.
+- Deze methode retourneert een Promise die het antwoord zal verwerken van het 'request', of dit succesvol is of niet.
+- Eenmaal het antwoord is ontvangen, zijn er een aantal mogelijkheden om het antwoord (body) te verwerken:
+  - `Body.json()`: retourneert een Promise dat de body parsed naar JSON
+  - `Body.text()`: retourneert een Promise dat de body parsed naar text
+
+Het grote blok code dat we hierboven bekeken hebben wordt dat verkleind tot:
+
+```JavaScript
+function fetchRequest(url) {
+	return fetch(url)
+		.then(body => body.json());
+}
+
+class JokeApp {
+	getData() {
+		fetchRequest('https://official-joke-api.appspot.com/random_joke') //retourneert promise object met response
+			.then(data => this.toHtml(data)) //resolve promise (argument is response)
+			.catch(error => console.error(error)); //reject promise (argument is error)
+	}
+	toHtml(joke) {
+		document.getElementById("category").innerHTML = `Category = ${joke.type}`;
+		document.getElementById("setup").innerHTML = `Q: ${joke.setup}`;
+		document.getElementById("punchline").innerHTML = `A: ${joke.punchline}`;
+	}
+}
+```
+
+### Tips & tricks (dingen die ik zelf vaak vergeet)
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
 - Element src bewerken: `document.getElementById('test').src = 'img/test.png'`
