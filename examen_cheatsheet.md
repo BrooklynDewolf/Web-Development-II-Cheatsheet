@@ -1973,6 +1973,247 @@ Een attribuut van een node verwijderen.
 
 Klik [hier](https://christianheilmann.com/stuff/JavaScript-DOM-Cheatsheet.pdf) om de DOM Cheatsheet te bekijken (gemaakt door Christian Heilmann).
 
+## 14. Asynchroon programmeren (callback & promises)
+
+Vooraleer we asynchroon programmeren, moeten we eerst weten wat synchroon programmeren betekent.
+
+In de echte kern is JavaScript een synchrone taal. Dit wil kortweg zeggen dat JavaScript maar 1 taak tegelijkertijd kan uitvoeren.
+
+### 14.1 Asynchroon
+
+Stel, we voeren een methode uit die een waarde teruggeeft. De methode duurt 10 seconden om te verwerken.
+
+```JavaScript
+let notAMoon = buildADeathStarAsync();
+```
+
+Daaronder hebben we een methode staan die de waarde van `notAMoon` nodig heeft.
+
+```JavaScript
+let alderaan = destroyPlanet(notAMoon);
+```
+
+JavaScript zal niet wachten tot de methode `buildDeathStarAsync()` is uitgevoerd, wat dus zal leiden tot een `TypeError` (`destroyPlanet` zal deze error gooien omdat notAMoon undefined is). Om dit te voorkomen hebben wij callback methodes en promises.
+
+### 14.2 Callback functies
+
+Callback functies bieden een oplossing voor dit probleem. We willen namelijk niet wachten op het resultaat van een functie om andere functies te starten, die geen dependency hebben met de eerste functie.
+
+In plaats van het result te retourneren en dit result te gebruiken door een andere functie, gaan we de andere functie (callback functie) als parameter meegeven aan de lang durende functie. In de langdurende functie kunnen we dan de callback functie aanroepen.
+
+Voorbeeld:
+
+```JavaScript
+function buildDeathStarAsync(callbackParameter){
+  //do a lot of stuff, it takes time to build a death star (10sec)
+  setTimeout(function(){
+    const planet = {name: 'Alderaan', moon:false}
+    console.log(`Builded ${planet.name}, it took 10 seconds`);
+    callbackParameter(planet); //Hier wordt de callback aangeroepen, nadat al de rest gedaan is.
+  },10000);
+}
+function destroyPlanet(planet){
+  //do a lot of stuff, it takes time to destroy a death star (2sec)
+  setTimeout(function(){
+    console.log(`Destroyed ${planet.name}, it took 2 seconds`);
+    console.log(planet.name === 'Alderaan'?'Aaaaaaargh, Alderaan destroyed\n'.repeat(10):'Nothing seriously happened’)
+  },2000);
+}
+
+buildDeathStarAsync(destroyPlanet);
+```
+
+Callback functies bieden dus een oplossing voor het probleem van asynchroon programmeren. Ze worden vaak gekoppeld aan eventhandlers (click, load, keyup,...) omdat je niet weet wanneer en hoe lang het event zal plaatsvinden.
+
+Een callback functie kan op verschillende manieren gedeclareerd worden:
+
+- `function nameFunction(par) { ... }`
+- `const nameFunction = function(par) {...}`
+- Anonymous function: `function(par) {...}`
+- Arrow notation: `(par) => {...}`
+
+### 14.2.1 Callback (addEventListener)
+
+```JavaScript
+elText = document.getElementById("textButtons");
+
+const btn = document.getElementById('button');
+const btn1 = document.getElementById('button');
+
+function clickMe(event){
+  showText(event);
+}
+
+function showText(evt){
+  elText.innerHTML =
+  `You clicked on button:
+  ${evt.target.innerHTML}`
+}
+
+btn.addEventListener('click', (event) => { showText(event); });
+btn1.addEventListener('click', clickMe);
+```
+
+> **(!)** Callback hell: Callbacks werken prima zolang het kleine geïsoleerde functies zijn. Van zodra de callback zelf callbacks heeft en deze dan nog ook eens een callback, enzovoort, enzoverder, dan krijgen we zogenaamde 'callback hell'. Dit is allesbehalve overzichtelijk en leidt bijna zeker tot fouten.
+
+### 14.3 Promise
+
+Het idee achter promises is het resultaat van een asynchrone operatie bij te houden in een variabele en deze te gaan gebruiken waar en wanneer je wilt.
+
+```JavaScript
+let deathStarPromise = buildADeathStarAsync();
+let army = buildCloneArmyAsync();
+```
+
+De asynchrone operatie `buildADeathStarAsync()` wordt toegekend aan `deathStarPromise`.
+
+Je kan reageren met het toekomstige resultaat van de eerste asynchrone functie door gebruik te maken van een `then` method, die een callback bevat als parameter, van de promise. Deze callback wordt uitgevoerd van zodra `buildADeathStarAsync` succesvol is afgehandeld.
+
+Indien de `buildADeathStarAsync` niet succesvol is afgehandeld, kan men via de catch method van de promise dit ook gaan afhandelen via een callback.
+
+Duidelijker voorbeeld:
+
+```JavaScript
+const myPromise = new Promise((resolve, reject) => {
+  let a = 1 + 2;
+  if(a == 2) {
+    resolve('Succes!');
+  } else {
+    reject('Failed!');
+  }
+});
+
+myPromise.then((resolve) => {...}, (reject) => {...});
+```
+
+In zowel `resolve()` als `reject()` kan men alles doorgeven wat je wilt (dit kunnen meerdere parameters zijn).
+
+Onderstaande code is hetzelfde als hierboven, maar dan met `.catch()` uitgewerkt.
+
+```JavaScript
+const myPromise = new Promise((resolve, reject) => {
+  let a = 1 + 2;
+  if(a == 2) {
+    resolve('Succes!');
+  } else {
+    reject('Failed!');
+  }
+});
+
+myPromise
+  .then((resolve) => {...})
+  .catch((reject) => {...});
+```
+
+> Promises kunnen zich in 3 toestanden bevinden:
+>
+> - Pending: Het resultaat van de promise is nog niet bepaald
+> - Fulfilled: De asynchrone operatie is afgerond en de promise heeft een waarde.
+> - Rejected: De asynchrone operatie is niet goed afgerond waardoor de promise niet gerealiseerd kan worden.
+>
+> Wanneer de toestand 'pending' is, kan deze overgaan in fulfilled of rejected. Is deze al fulfilled of rejected, dan kan deze niet meer veranderen.
+
+### 14.3.1 Promise (met extra argumenten)
+
+Stel, we willen argumenten meegeven aan een Promise. Dit kan niet zomaar, maar, we kunnen deze wel in een functie stoppen en de `new Promise()` returnen. Voorbeeld:
+
+```JavaScript
+const myFunction = (username, password) => {
+  return new Promise((resolve, reject) => {
+    //Stuff using username & password
+    if(/*Everything went fine*/) {
+      resolve('It worked!');
+    } else {
+      reject('Failed :(');
+    }
+  });
+}
+```
+
+We kunnen dan de functie als volgt aanroepen:
+
+```JavaScript
+myFunction(username, password)
+  .then((resolve) => {...})
+  .catch((reject) => {...});
+```
+
+### 14.3.2 `Promise.all` en `Promise.race`
+
+Het probleem met callbacks was: een functie pas uitvoeren nadat verschillende andere callbacks uitgevoerd waren.
+
+#### 14.3.2.1 `Promise.all`
+
+`Promise.all` is een statische functie die net dat bereikt: je geeft er een array van promises aan mee, en hij wodt geresolved met een array van values als ze allemaal afgerond zijn (je krijgt dus een array met alle values).
+
+> **Belangrijk**: Als er 1 van de promises faalt, dan faalt de volledige `Promise.all`.
+
+Voorbeeld:
+
+```JavaScript
+const gok1 = () =>
+  new Promise((resolve, reject) => {
+    const gok = Number.parseInt(prompt("Geef een getal tussen 1 en 3"));
+    // const randomWaarde = Math.floor(Math.random() * 3) + 1;
+    const randomWaarde = 2;
+    gok === randomWaarde ? resolve("Haardroger") : reject("Geen haardroger");
+  });
+const gok2 = () =>
+  new Promise((resolve, reject) => {
+    const gok = Number.parseInt(prompt("Geef een getal tussen 1 en 5"));
+    // const randomWaarde = Math.floor(Math.random() * 5) + 1;
+    const randomWaarde = 2;
+    gok === randomWaarde ? resolve("Koelkast") : reject("Geen koelkast");
+  });
+const gok3 = () =>
+  new Promise((resolve, reject) => {
+    const gok = Number.parseInt(prompt("Geef een getal tussen 1 en 8"));
+    // const randomWaarde = Math.floor(Math.random() * 8) + 1;
+    const randomWaarde = 2;
+    gok === randomWaarde ? resolve("Vliegreis") : reject("Geen vliegreis");
+  });
+
+function init() {
+  document.getElementById("gokMaar").onclick = () => {
+    Promise.all([gok1(), gok2(), gok3()]).then(values => {
+      console.log(values);
+    }).catch(values => {
+      console.log(values);
+    });
+  }
+}
+window.onload = init;
+```
+
+Resultaat:
+
+```JavaScript
+// Als enkel gok2 fout is => catch
+Geen koelkast
+// Als geen enkele gok fout is => then
+(3) ['Haardroger', 'Koelkast', 'Vliegreis']
+// Als enkel gok3 fout is => catch + fail fast
+Geen vliegreis
+// Als gok1, gok2 en gok3 fout zijn => catch + fail fast
+Geen haardroger
+```
+
+Kortweg: als er meerdere waarden fout zijn zal deze enkel de eerste foute waarden printen (fail fast).
+
+#### 14.3.2.1 `Promise.race`
+
+`Promise.race` is gelijkaardig aan `Promise.all`, maar eigenlijk het tegenovergestelde.
+
+Bij `Promise.all` stopt de promise als er 1 rejected is, bij `Promise.race` stop de promise als er 1 resolved is, maar ook als er 1 rejected is.
+
+---
+
+> Extra info (beperkingen van Promise):
+>
+> - Promises maken het werken met asynchrone code een stuk aangenamer, perfect zijn ze natuurlijk niet.
+> - Een eerste probleem is dat een promise altijd start, en altijd afgerond wordt, dus ook als er nooit iemand `.then()` aanroept, of als het resultaat je niet langer interesseert kan je een promise niet 'cancelen'.
+> - Eenmaal een promise afgerond is, kan je ze ook niet makkelijk opnieuw uitvoeren, de promise zelf bevat enkel het resultaat.
+
 ### Tips & tricks
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
