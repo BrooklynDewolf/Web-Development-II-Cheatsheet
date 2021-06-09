@@ -1049,6 +1049,16 @@ BlogEntry.prototype.contains = function(searchText) {
 };
 ```
 
+### 10.3 `toString()` methode
+
+In de klassedeclaratie van een JavaScript class object kan je ook een `toString()` methode toevoegen. Deze wordt automatisch aangeroepen wanneer men bv. met `console.log(obj);` een object logt.
+
+```JavaScript
+toString() {
+    return `Rechthoek met breedte= ${this._width} en hoogte = ${this._height}`;
+  }
+```
+
 ## 11. Functioneel programmeren
 
 > Functional programming is the process of
