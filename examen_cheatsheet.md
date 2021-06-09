@@ -2387,6 +2387,24 @@ class JokeApp {
 }
 ```
 
+### 15.3.1 Fetch Request status
+
+Als we een fetch request versturen, kan het ook zijn dat de API niet bereikbaar is (we krijgen dus een 404 weer).
+
+Aangezien onze fetch request een promise is, zou je denken dat we dit kunnen opvangen met catch. Dit is **niet** het geval! Je moet eerst kijken of het resultaat van de fetch 'ok' is. Voorbeeld:
+
+```JavaScript
+fetch('example.com/api')
+  .then(res => {
+    if(res.ok) {
+      //SUCCES
+      return res.json()
+    } else {
+      //ERROR
+    }
+  }).then(data => console.log(data));
+```
+
 ### Tips & tricks (dingen die ik zelf vaak vergeet)
 
 - Tekstveld uitlezen: `document.getElementById('test').value`
