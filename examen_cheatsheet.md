@@ -1236,6 +1236,17 @@ let filteredArr = arr.filter((waarde) => waarde * 10);
 // filteredArr = [50, 100]
 ```
 
+Property bij object mappen voorbeeld:
+
+```JavaScript
+studenten.map((value) => {
+  value.feedback =
+    value.punten >= gemiddelde ? 'Boven gemiddelde' : 'Onder gemiddelde';
+});
+```
+
+We voegen een waarde 'feedback' toe aan ieder Object in de verzameling studenten.
+
 ### 11.3.3 Reduce
 
 Je gebruikt `Reduce` wanneer je van een reeks items een nieuwe waarde wilt berekenen. Het resultaat kan van alles zijn (een andere array, nieuw object, booleanse waarde,...).
