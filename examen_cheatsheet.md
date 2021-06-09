@@ -1907,8 +1907,8 @@ Je kan ook zelf expliciet nodes maken en toevoegen aan de DOM-tree.
 
 - Creatie van nodes
 
-  - `const anElementNode = createElement(tagName)`
-  - `const aTextNode = createTextNode(text)`
+  - `const anElementNode = document.createElement(tagName)`
+  - `const aTextNode = document.createTextNode(text)`
 
 - Toevoegen van een node
 
